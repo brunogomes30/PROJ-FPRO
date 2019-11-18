@@ -1,2 +1,0 @@
-O jogo será inspirado no Galaga mas o movimento será mais livre, ou seja, poderá mover-se na vertical e horizontal e rodar o jogar de forma a tornar o gameplay mais dinâmico
-Os inimigos virão de varias posições e se for possivel, adicionarei boosts que aumentará o dano,o número de tiros , dar um escudo ao player e aumentar o rate of fire do player
