@@ -1,6 +1,7 @@
+import time
 from Player import Player
 from pygame import *
-from variables import screen
+from variables import screen,all_entities
 import pygame
 import math
 
@@ -9,57 +10,52 @@ import math
 
 player = Player()
 player.image = pygame.image.load('images\\player.png')
+
 player.y = 300
 player.x = 300
-
+all_entities.append(player)
 clock = pygame.time.Clock()
 running = True
 
-"""
-vel = 0
-acc = 0
-angle = 0
-rotate = 0
-rotation_speed = 0.01
-plane_speed = 0.05
-
-"""
-
-keys = {K_a : False,
-        K_d : False,
-        K_w : False,
-        K_s : False
-        }
 while running:
+    
     for event in pygame.event.get():
-        #keys = pygame.key.get_pressed()
-        if event.type == pygame.KEYDOWN:
-            keys[event.key] = True
-        elif event.type == pygame.KEYUP:
-            keys[event.key] = False
+        keys = pygame.key.get_pressed()
+    
     
     if keys[K_a]:
         player.acc_right = player.turning_speed
+        if player.vel_right < 0:
+            player.vel_right = 0
+        player.acc_forwards = player.turning_speed
     elif keys[K_d]:
         player.acc_right = -player.turning_speed
+        if player.vel_right > 0:
+            player.vel_right = 0
+        player.acc_forwards = player.turning_speed
     else:
         player.acc_right = 0
         
     if keys[K_w]:
         player.acc_forwards = player.boost_speed
     elif keys[K_s]:
-        player.acc_forwards = player.slow_speed
+        player.acc_forwards = - player.slow_speed
     else:
         player.acc_forwards = 0
     
+    if keys[K_SPACE]:
+        player.fire()
+    
     player.move()
-    #rotated_plane = pygame.transform.rotate(plane,angle)
-    #rad_angle = angle*math.pi/180
-    #x += acc*math.cos(rad_angle)
-    #y += acc*math.sin(rad_angle)
+    for x in all_entities:
+        x.move()
+    
     screen.fill((255,255,255))
-    #screen.blit(rotated_plane, (x,y))
+    
     player.draw_self()
+    for x in all_entities:
+        x.draw_self()
+    
     
     pygame.display.flip()
     
