@@ -32,8 +32,8 @@ dar um escudo ao player e aumentar o rate of fire do player.
 #### Tarefas
 
 1.  Criar o modelo do player e o background do nível(Algo simples) (50%)
-2.  Realizar o movimento do player (90%)
-3.  Disparar os tiros ( 0% )
+2.  Realizar o movimento do player (100% ?)
+3.  Disparar os tiros ( 80% )
 4.  Criar inimigos que vão atrás do player e disparam ocasionalmente (0%)
 5.  Adicionar os boosts se for possível (0%)
 
