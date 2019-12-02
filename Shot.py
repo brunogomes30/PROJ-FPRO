@@ -1,23 +1,22 @@
 import math
 import pygame
+from BaseObject import BaseObject
 from variables import *
 
 
-class Shot:
+class Shot(BaseObject):
     def __init__(self):
-        self.y = 0
-        self.x = 0
+        super().__init__()
+        self.sound = pygame.mixer.Sound("sounds\\player_shot.wav")
         self.speed = 15
-        self.rotation = 0
-        self.shot = None
-        self.rotated_shot = None
-        
-    def move(self):
-        self.rotated_shot = pygame.transform.rotate(self.shot,self.rotation)
-        self.y -= self.speed* math.cos( math.radians(self.rotation)) 
-        self.x -= self.speed * math.sin(math.radians(self.rotation)) 
-    
     
     def draw_self(self):
-        screen.blit(self.rotated_shot, (self.x,self.y))
+        w, h = self.image.get_size()
+        box = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
+        box_rotate = [p.rotate(self.rotation) for p in box]
+        min_box = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
+        max_box = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
+        origin = (self.x + min_box[0], self.y - max_box[1])
+        self.rotated_image = pygame.transform.rotate(self.image, self.rotation)
+        screen.blit(self.rotated_image, origin)
         

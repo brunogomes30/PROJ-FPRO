@@ -1,19 +1,15 @@
 import time
 import pygame
 import math
-from variables import screen
+from BaseObject import BaseObject
+from variables import screen , time_delta
 import variables
 from Shot import Shot
-class Player:
+class Player (BaseObject):
     
     def __init__(self):
+        super().__init__()
         self.lives = 3
-        #position
-        self.y = 0
-        self.x = 0
-        self.image = None
-        self.rotated_player = None
-        
         #Movement variables
         self.momentum_y = 0
         self.momentum_x = 0
@@ -24,24 +20,23 @@ class Player:
         self.rotation = 0
         
         #Speed variables
-        self.turning_speed = 3
-        self.boost_speed = 3
-        self.constant_speed = 5
-        self.slow_speed = 1
-        self.max_forwards_speed = 8
-        self.min_forwards_speed = 1
-        self.max_turning_speed = 3
+        self.turning_speed = 50 * time_delta
+        self.boost_speed = 200 * time_delta
+        self.constant_speed = 400 * time_delta
+        self.slow_speed = 100 * time_delta
+        self.max_forwards_speed = 800 * time_delta #* 100000
+        self.min_forwards_speed = 100 * time_delta
+        self.max_turning_speed = 200 * time_delta
         
         #Shot
         self.last_shot = None
-        self.shot_interval = 0.2
+        self.shot_interval = 0.3 # * 0.001
         
     def move(self):
         if self.acc_forwards == 0:
             self.reset_forwards_speed()
         else:
             self.vel_forwards += self.acc_forwards * 0.1 if self.min_forwards_speed < self.vel_forwards < self.max_forwards_speed else 0
-            
             
         self.y -= self.vel_forwards * math.cos( math.radians(self.rotation)) + self.momentum_y
         self.x -= self.vel_forwards * math.sin(math.radians(self.rotation)) + self.momentum_x
@@ -51,10 +46,11 @@ class Player:
         if self.acc_right == 0:
             self.reset_rotation_speed()
         else:
-            self.vel_right += self.acc_right * 0.5 if -self.max_turning_speed < self.vel_right< self.max_turning_speed else 0
+            self.vel_right += self.acc_right * 0.2 if -self.max_turning_speed < self.vel_right< self.max_turning_speed else 0
         
         self.rotation += self.vel_right * (abs(self.vel_forwards / 8))
-        self.rotated_player = pygame.transform.rotate(self.image,self.rotation)
+        self.rotated_image = pygame.transform.rotate(self.image,self.rotation)
+        
         
         #rad_angle =  self.rotation *math.pi/180
         
@@ -63,6 +59,22 @@ class Player:
             self.vel_forwards -= 0.1
         elif self.vel_forwards < self.constant_speed:
             self.vel_forwards += 0.1
+    
+    def draw_self(self):
+        #super().draw_self()
+        w, h = self.image.get_size()
+        box = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
+        box_rotate = [p.rotate(self.rotation) for p in box]
+        min_box = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
+        max_box = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
+        origin = (self.x + min_box[0], self.y - max_box[1])
+        self.rotated_image = pygame.transform.rotate(self.image, self.rotation)
+        center = self.get_center()
+        pygame.draw.circle(screen, (0,255,0), (int(self.x), int(self.y)), 2)
+        screen.blit(self.rotated_image, origin)
+        pygame.draw.circle(screen, (0,0,255), (int(center[1]), int(center[0])), 2)
+        self.load_hitbox()
+        
         
     def reset_rotation_speed(self):
         if self.vel_right > 0:
@@ -77,16 +89,16 @@ class Player:
             return
         self.last_shot = now
         shot = Shot()
-        shot.shot = pygame.image.load("images\\shot.png")
-        shot.y = self.y
-        shot.x = self.x
+        shot.image = pygame.image.load("images\\shot.png")
+        #shot.sound.play()
+        center = self.get_center()
+        shot.y = center[0]
+        shot.x = center[1]
         shot.rotation = self.rotation
-        #shot.move()
+        shot.move()
         variables.all_entities.append(shot)
         
-    
-    def draw_self(self):
-        screen.blit(self.rotated_player, (self.x,self.y))
+
     
     
     
