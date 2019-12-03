@@ -51,6 +51,12 @@ class Player (BaseObject):
         self.rotation += self.vel_right * (abs(self.vel_forwards / 8))
         self.rotated_image = pygame.transform.rotate(self.image,self.rotation)
         
+        w, h = self.image.get_size()
+        box = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
+        box_rotate = [p.rotate(self.rotation) for p in box]
+        min_box = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
+        max_box = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
+        self.origin = (self.x + min_box[0], self.y - max_box[1])
         
         #rad_angle =  self.rotation *math.pi/180
         
@@ -62,19 +68,19 @@ class Player (BaseObject):
     
     def draw_self(self):
         #super().draw_self()
-        w, h = self.image.get_size()
-        box = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
-        box_rotate = [p.rotate(self.rotation) for p in box]
-        min_box = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
-        max_box = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
-        origin = (self.x + min_box[0], self.y - max_box[1])
-        self.rotated_image = pygame.transform.rotate(self.image, self.rotation)
+        
         center = self.get_center()
         pygame.draw.circle(screen, (0,255,0), (int(self.x), int(self.y)), 2)
-        screen.blit(self.rotated_image, origin)
+        screen.blit(self.rotated_image, self.origin)
         pygame.draw.circle(screen, (0,0,255), (int(center[1]), int(center[0])), 2)
         self.load_hitbox()
         
+        
+        self.mask = pygame.mask.from_surface(self.rotated_image)
+
+        self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
+        
+#        print(self.rect)
         
     def reset_rotation_speed(self):
         if self.vel_right > 0:
