@@ -1,5 +1,5 @@
-import math
 import pygame
+import math
 from variables import screen
 from HitBox import HitBox
 
@@ -15,6 +15,7 @@ class BaseObject(pygame.sprite.Sprite):
         self.image = None
         self.hitbox = None
         self.mask = None
+        self.hp = 100
         
     def move(self):
         #self.rotated_image = pygame.transform.rotate(self.image,self.rotation)
@@ -36,9 +37,10 @@ class BaseObject(pygame.sprite.Sprite):
         
     
     def draw_self(self):
-        
-        
-        self.rotated_image = pygame.transform.rotate(self.image,self.rotation)
+        w, h = self.image.get_size()
+        self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 50 )/100), int(h * (self.hp + 50)/100)))
+        self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
+        #self.rotated_image = pygame.transform.scale(self.rotated_image, (1000, 1000))
         screen.blit(self.rotated_image, self.origin)
 #        if self.hitbox != None:
 #            hitbox = self.hitbox

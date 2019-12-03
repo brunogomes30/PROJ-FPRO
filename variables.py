@@ -6,3 +6,5 @@ WIDTH = 800
 HEIGHT = 1200
 screen = pygame.display.set_mode((HEIGHT, WIDTH))
 all_entities = []
+can_spawn_enemy = True
+entities_to_remove = []
