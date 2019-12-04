@@ -35,7 +35,7 @@ dar um escudo ao player e aumentar o rate of fire do player.
 2.  Realizar o movimento do player (100%)
 3.  Disparar os tiros ( 100% )
 4.  Colisões com mask (100%)
-4.  Criar inimigos que vão atrás do player e disparam ocasionalmente (0%)
+4.  Criar inimigos que vão atrás do player e disparam ocasionalmente (50%)
 5.  Adicionar os boosts se for possível (0%)
 
 ### 18/11/2019
