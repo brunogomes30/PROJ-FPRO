@@ -1,6 +1,7 @@
 import pygame
 import math
-from variables import screen
+import variables
+from variables import screen, time_delta
 from HitBox import HitBox
 
 class BaseObject(pygame.sprite.Sprite):
@@ -19,8 +20,8 @@ class BaseObject(pygame.sprite.Sprite):
         
     def move(self):
         #self.rotated_image = pygame.transform.rotate(self.image,self.rotation)
-        self.y -= self.speed * math.cos(math.radians(self.rotation)) 
-        self.x -= self.speed * math.sin(math.radians(self.rotation)) 
+        self.y -= (self.speed * math.cos(math.radians(self.rotation)))  * variables.time_delta
+        self.x -= (self.speed * math.sin(math.radians(self.rotation)))  * variables.time_delta
         
         w, h = self.image.get_size()
         box = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
@@ -40,13 +41,10 @@ class BaseObject(pygame.sprite.Sprite):
         w, h = self.image.get_size()
         self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 50 )/100), int(h * (self.hp + 50)/100)))
         self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
-        #self.rotated_image = pygame.transform.scale(self.rotated_image, (1000, 1000))
         screen.blit(self.rotated_image, self.origin)
-#        if self.hitbox != None:
-#            hitbox = self.hitbox
-#            pygame.draw.rect(screen,(255, 0, 0), hitbox.rect)
         self.mask = pygame.mask.from_surface(self.rotated_image)
         self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
+        pygame.draw.circle(screen, (0,255,0), (int(self.x), int(self.y)), 2)
         
     
     def load_hitbox(self):

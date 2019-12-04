@@ -8,8 +8,8 @@ class Shot(BaseObject):
     def __init__(self):
         super().__init__()
         self.sound = pygame.mixer.Sound("sounds\\player_shot.wav")
-        self.speed = 15
-        self.damage = 25
+        self.speed = 1000
+        self.damage = 34
     
     def move(self):
         super().move()

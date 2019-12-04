@@ -27,10 +27,8 @@ start_spawning()
 entities_to_remove = variables.entities_to_remove
 
 while running:
-    print(len(all_entities))
     entities_to_remove = []
     if variables.can_spawn_enemy:
-        print("ASDASDAS")
         variables.can_spawn_enemy = False
         spawn_enemy()
         
@@ -46,22 +44,30 @@ while running:
         player.acc_right = player.turning_speed
         if player.vel_right < 0:
             player.vel_right = 0
-        player.acc_forwards = player.turning_speed
+        player.acc_forwards = player.turning_speed 
     elif keys[K_d]:
         player.acc_right = -player.turning_speed
         if player.vel_right > 0:
             player.vel_right = 0
-        player.acc_forwards = player.turning_speed
+        player.acc_forwards = player.turning_speed 
     else:
         player.acc_right = 0
+    
     if keys[K_w]:
         player.acc_forwards = player.boost_speed
     elif keys[K_s]:
         player.acc_forwards = - player.slow_speed
+        player.turning_speed = variables.DEFAULT_TURNING_SPEED #* time_delta * 2
     else:
+        player.turning_speed = variables.DEFAULT_TURNING_SPEED #* time_delta
         player.acc_forwards = 0
     if keys[K_SPACE]:
         player.fire()
+        
+    if keys[K_LSHIFT]:
+        variables.time_delta = 1 / FPS / 10
+    else:
+        variables.time_delta = 1 / FPS
         
     #After Input
     
@@ -93,6 +99,7 @@ while running:
                     if type(b) == Enemy:
                         print("Collided")
                 else:
+                    
                     if type(a) == Shot and type(b) == Enemy or type(b) == Shot and type(a) == Enemy:
                         if type(a) == Enemy:
                             switched = True
@@ -103,9 +110,16 @@ while running:
                         if b.hp <= 0:
                             entities_to_remove.append(b)
                         b.get_shot()
+                        
+                    if type(a) == Enemy and type(b) == Enemy:
+                        a.speed, b.speed = b.speed, a.speed
+                        #a.asteroid_sound.play()
                 
     for x in entities_to_remove:
-        all_entities.remove(x)
+        try:
+            all_entities.remove(x)
+        except Exception:
+            continue
     pygame.display.flip()
     clock.tick(FPS)
     

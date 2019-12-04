@@ -12,11 +12,10 @@ def collide(a, b):
 def start_spawning():
     global can_spawn_enemy
     variables.can_spawn_enemy = True
-    t = threading.Timer(1, start_spawning)
+    t = threading.Timer(0.5, start_spawning)
     t.start()
 
 def spawn_enemy():
     global all_entities
-    print("Teste")
     enemy = Enemy()
     enemy.spawn()

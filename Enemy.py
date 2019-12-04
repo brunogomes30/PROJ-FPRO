@@ -1,26 +1,29 @@
 import random
 import math
 import pygame
+import variables
 from variables import *
 from BaseObject import BaseObject
 
 class Enemy(BaseObject):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load('images\\enemy1.png')
+        self.image = pygame.image.load('images\\enemy'+str(random.randint(1,6))+'.png')
+        self.asteroid_sound = pygame.mixer.Sound("sounds\\asteroids_impact.wav")
         self.y = 0
         self.x = 0
         self.speed = [0, 0]
+        self.rotation_speed = random.randint(1,5)
         
     def move(self):
-        self.rotation += 1
+        self.rotation += self.rotation_speed
         super().move()
         
     def get_shot(self):
         w, h = self.image.get_size()
         
     def spawn(self):
-        maxspeed = 300
+        maxspeed = 8000
         if random.randint(0,2):
             #SPAWN DOWN
             self.y = random.randint(HEIGHT + 100, HEIGHT + 300)
@@ -38,13 +41,12 @@ class Enemy(BaseObject):
             #SPAWN LEFT
             self.x = - random.randint(100, 300)
             self.speed[0] = random.randint(maxspeed * 0.2, maxspeed) / 100
-        
         all_entities.append(self)
     
     def move(self):
-        self.rotation +=1
-        self.y += self.speed[1]
-        self.x += self.speed[0]
+        self.rotation += 100 * variables.time_delta
+        self.y += self.speed[1] * variables.time_delta
+        self.x += self.speed[0] * variables.time_delta
         w, h = self.image.get_size()
         box = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
         box_rotate = [p.rotate(self.rotation) for p in box]
