@@ -1,3 +1,4 @@
+import threading
 import time
 import pygame
 import math
@@ -10,6 +11,10 @@ class Player (BaseObject):
     def __init__(self):
         super().__init__()
         self.lives = 3
+        self.score = 0
+        self.invulnerable = False
+        self.ialpha = 0
+        self.alpha = 255
         #Movement variables
         self.momentum_y = 0
         self.momentum_x = 0
@@ -21,12 +26,12 @@ class Player (BaseObject):
         
         #Speed variables
         self.turning_speed = variables.DEFAULT_TURNING_SPEED #* time_delta
-        self.boost_speed = 10 #* time_delta
-        self.constant_speed = 10 #* time_delta
-        self.slow_speed = 1 #* time_delta
-        self.max_forwards_speed = 50 #* time_delta * 100000
+        self.boost_speed = 5 #* time_delta
+        self.constant_speed = 5 #* time_delta
+        self.slow_speed = 5 #* time_delta
+        self.max_forwards_speed = 55 #* time_delta * 100000
         self.min_forwards_speed = 0 #* time_delta
-        self.max_turning_speed = 10 #* time_delta
+        self.max_turning_speed = 12 #* time_delta
         
         #Shot
         self.last_shot = None
@@ -38,8 +43,8 @@ class Player (BaseObject):
         else:
             self.vel_forwards += self.acc_forwards * 0.1 if self.min_forwards_speed < self.vel_forwards < self.max_forwards_speed else 0
             
-        self.y -= (self.vel_forwards * math.cos( math.radians(self.rotation)) + self.momentum_y) * (variables.time_delta * 10)
-        self.x -= (self.vel_forwards * math.sin( math.radians(self.rotation)) + self.momentum_x) * (variables.time_delta * 10)
+        self.y -= (self.vel_forwards * math.cos( math.radians(self.rotation)) + self.momentum_y) * (variables.time_delta + 1/variables.FPS / 2) * 10
+        self.x -= (self.vel_forwards * math.sin( math.radians(self.rotation)) + self.momentum_x) * (variables.time_delta + 1/variables.FPS / 2) * 10
         self.momentum_y = (-self.vel_forwards * math.cos( math.radians(self.rotation)) * 0.5 ) #* time_delta
         self.momentum_x = (-self.vel_forwards * math.sin(math.radians(self.rotation)) * 0.5 ) #* time_delta
         
@@ -48,7 +53,7 @@ class Player (BaseObject):
         else:
             self.vel_right += self.acc_right * 0.2 if -self.max_turning_speed < self.vel_right< self.max_turning_speed else 0
         
-        self.rotation += self.vel_right * (abs(self.vel_forwards / 8)) * (variables.time_delta * 3)
+        self.rotation += self.vel_right * (abs(self.vel_forwards / 8)) * ((variables.time_delta + 1/variables.FPS/2) * 3)
         self.rotated_image = pygame.transform.rotate(self.image,self.rotation)
         
         w, h = self.image.get_size()
@@ -68,16 +73,27 @@ class Player (BaseObject):
     
     def draw_self(self):
         center = self.get_center()
-        pygame.draw.circle(screen, (0,255,0), (int(self.x), int(self.y)), 2)
+        self.mask = pygame.mask.from_surface(self.rotated_image)
+        self.rotated_image = self.rotated_image.convert()
+        
+        self.alpha += self.ialpha
+        if self.alpha > 255:
+            self.ialpha = -self.ialpha
+            self.alpha  = 255
+        elif self.alpha < 0:
+            self.ialpha = -self.ialpha
+            self.alpha = 0
+        
+        self.rotated_image.set_alpha(self.alpha)
         screen.blit(self.rotated_image, self.origin)
-        pygame.draw.circle(screen, (0,0,255), (int(center[1]), int(center[0])), 2)
+        #pygame.draw.circle(screen, (0,0,255), (int(center[1]), int(center[0])), 2)
         self.load_hitbox()
         
         
-        self.mask = pygame.mask.from_surface(self.rotated_image)
-
-        self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
         
+        self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
+        if self.invulnerable:
+            print("Ok")
 #        print(self.rect)
         
     def reset_rotation_speed(self):
@@ -102,3 +118,14 @@ class Player (BaseObject):
         shot.move()
         variables.all_entities.insert(0, shot)
         
+    def get_hit(self):
+        self.lives -=1
+        self.invulnerable = True
+        t = threading.Timer(5,self.set_vulnerable)
+        self.ialpha = -5
+        t.start()
+        
+    def set_vulnerable(self):   
+        self.invulnerable = False
+        self.alpha = 255
+        self.ialpha = 0

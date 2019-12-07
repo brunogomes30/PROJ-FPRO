@@ -4,7 +4,8 @@ from Enemy import Enemy
 from Shot import Shot
 from utils import *
 from pygame import *
-from variables import screen,all_entities, time_delta, FPS, HEIGHT, WIDTH, can_spawn_enemy
+from Label import Label
+from variables import screen,all_entities, time_delta, FPS, HEIGHT, WIDTH, can_spawn_enemy, temporary_entities
 import variables
 import pygame
 import math
@@ -25,6 +26,10 @@ clock = pygame.time.Clock()
 running = True
 start_spawning()
 entities_to_remove = variables.entities_to_remove
+
+variables.font = pygame.font.SysFont("Roboto", 32)
+font = variables.font
+
 
 while running:
     entities_to_remove = []
@@ -64,8 +69,9 @@ while running:
     if keys[K_SPACE]:
         player.fire()
         
-    if keys[K_LSHIFT]:
-        variables.time_delta = 1 / FPS / 10
+    if keys[K_LSHIFT] and player.score > 0:
+        player.score -=1
+        variables.time_delta = 1 / FPS / 100
     else:
         variables.time_delta = 1 / FPS
         
@@ -73,17 +79,33 @@ while running:
     
     for x in all_entities:
         x.move()
-        
-    #for x in all_entities:
-        #if(x.mask.)
+
     for x in all_entities:
         if not (-HEIGHT<x.y<HEIGHT*2 and -WIDTH<x.x<WIDTH*2):
             entities_to_remove.append(x)
+    
+    score_display = font.render("Score: "+str(player.score), 1, (255, 255, 255))
+    lives_display = font.render("Lives: "+str(player.lives), 1, (255, 255, 255))
+    
     screen.fill((0,0,0))
     
-    player.draw_self()
+    
+    
+    
+    
     for x in all_entities:
         x.draw_self()
+    
+    temps_to_remove = []
+    
+    for x in temporary_entities:
+        x.ticksLeft-=1
+        if x.ticksLeft <= 0:
+            temps_to_remove.append(x)
+        x.draw_self()
+        
+    for x in temps_to_remove:
+        temporary_entities.remove(x)
     
     
     for x in entities_to_remove:
@@ -93,13 +115,18 @@ while running:
     all_entities_updated = all_entities.copy()
     for i in range(len(all_entities)):
         for j in range(i,len(all_entities)):
-            a, b = all_entities[i], all_entities[j]
+            a, b = all_entities[i], all_entities[j] 
             if collide(a, b):
                 if type(a) == Player:
                     if type(b) == Enemy:
-                        print("Collided")
+                        if not player.invulnerable:
+                            if player.lives == 0:
+                                running = False
+                            player.get_hit()
+                            new_label = Label("-1", b.y, b.x)
+                            temporary_entities.append(new_label)
+                        entities_to_remove.append(b)
                 else:
-                    
                     if type(a) == Shot and type(b) == Enemy or type(b) == Shot and type(a) == Enemy:
                         if type(a) == Enemy:
                             switched = True
@@ -109,6 +136,9 @@ while running:
                         b.hp -= a.damage
                         if b.hp <= 0:
                             entities_to_remove.append(b)
+                            player.score += b.score
+                            new_label = Label("+" + str(b.score), b.y, b.x)
+                            temporary_entities.append(new_label)
                         b.get_shot()
                         
                     if type(a) == Enemy and type(b) == Enemy:
@@ -120,10 +150,8 @@ while running:
             all_entities.remove(x)
         except Exception:
             continue
+    screen.blit(score_display, (0, 0))
+    screen.blit(lives_display, (0, 25))
+    
     pygame.display.flip()
     clock.tick(FPS)
-    
-    
-    
-    
-

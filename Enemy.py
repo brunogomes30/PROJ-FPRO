@@ -13,6 +13,7 @@ class Enemy(BaseObject):
         self.y = 0
         self.x = 0
         self.speed = [0, 0]
+        self.score = 20
         self.rotation_speed = random.randint(1,5)
         
     def move(self):
