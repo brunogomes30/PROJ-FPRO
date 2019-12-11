@@ -12,10 +12,14 @@ def collide(a, b):
 def start_spawning():
     global can_spawn_enemy
     variables.can_spawn_enemy = True
-    t = threading.Timer(1.5, start_spawning)
+    t = threading.Timer(1, start_spawning)
     t.start()
 
 def spawn_enemy():
     global all_entities
     enemy = Enemy()
     enemy.spawn()
+    
+    
+def inside_screen(obj):
+    return  0<=obj.y<=variables.HEIGHT and 0<=obj.x<=variables.WIDTH

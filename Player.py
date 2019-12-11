@@ -62,7 +62,7 @@ class Player (BaseObject):
         min_box = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
         max_box = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
         self.origin = (self.x + min_box[0], self.y - max_box[1])
-        
+        self.rect = pygame.Rect(self.origin[0], self.origin[1], self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
         #rad_angle =  self.rotation *math.pi/180
         
     def reset_forwards_speed(self):
@@ -87,13 +87,17 @@ class Player (BaseObject):
         self.rotated_image.set_alpha(self.alpha)
         screen.blit(self.rotated_image, self.origin)
         #pygame.draw.circle(screen, (0,0,255), (int(center[1]), int(center[0])), 2)
+        #pygame.draw.circle(screen, (0,0,255), (int(self.x), int(self.y)), 2)
+        
+        
         self.load_hitbox()
         
         
         
-        self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
+        
+        #pygame.draw.rect(screen, (0, 255, 0), self.rect, 1)
         if self.invulnerable:
-            print("Ok")
+            pass
 #        print(self.rect)
         
     def reset_rotation_speed(self):
@@ -109,14 +113,14 @@ class Player (BaseObject):
             return
         self.last_shot = now
         shot = Shot()
-        shot.image = pygame.image.load("images\\shot.png")
+        
         #shot.sound.play()
         center = self.get_center()
         shot.y = center[0]
         shot.x = center[1]
         shot.rotation = self.rotation
         shot.move()
-        variables.all_entities.insert(0, shot)
+        variables.all_entities.add(shot)
         
     def get_hit(self):
         self.lives -=1

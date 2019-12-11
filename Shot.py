@@ -7,6 +7,8 @@ from variables import *
 class Shot(BaseObject):
     def __init__(self):
         super().__init__()
+        self.image = pygame.image.load("images\\shot.png")
+        self.mask = pygame.mask.from_surface(self.image)
         self.sound = pygame.mixer.Sound("sounds\\player_shot.wav")
         self.speed = 1000
         self.damage = 50
@@ -20,6 +22,8 @@ class Shot(BaseObject):
         max_box = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
         origin = (self.x + min_box[0], self.y - max_box[1])
         self.origin = origin
+        
+        self.rect = pygame.Rect(origin[0], origin[1], self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
         
         
    

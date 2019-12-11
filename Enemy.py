@@ -9,6 +9,7 @@ class Enemy(BaseObject):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load('images\\enemy'+str(random.randint(1,6))+'.png')
+        self.mask = pygame.mask.from_surface(self.image)
         self.asteroid_sound = pygame.mixer.Sound("sounds\\asteroids_impact.wav")
         self.y = 0
         self.x = 0
@@ -42,7 +43,7 @@ class Enemy(BaseObject):
             #SPAWN LEFT
             self.x = - random.randint(100, 300)
             self.speed[0] = random.randint(maxspeed * 0.2, maxspeed) / 100
-        all_entities.append(self)
+        all_entities.add(self)
     
     def move(self):
         self.rotation += 100 * variables.time_delta
@@ -60,4 +61,6 @@ class Enemy(BaseObject):
         pivot_move = pivot_rotate - pivot
         origin = (self.x + min_box[0] - pivot_move[0], self.y - max_box[1] + pivot_move[1])
         self.origin = origin
-        
+        self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 75 )/100), int(h * (self.hp + 50)/100)))
+        self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
+        self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])

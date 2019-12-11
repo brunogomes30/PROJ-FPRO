@@ -19,7 +19,10 @@ class BaseObject(pygame.sprite.Sprite):
         self.hp = 100
         
     def move(self):
-        #self.rotated_image = pygame.transform.rotate(self.image,self.rotation)
+        w, h = self.image.get_size()
+        self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 75 )/100), int(h * (self.hp + 50)/100)))
+        self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
+        
         self.y -= (self.speed * math.cos(math.radians(self.rotation)))  * variables.time_delta
         self.x -= (self.speed * math.sin(math.radians(self.rotation)))  * variables.time_delta
         
@@ -35,15 +38,15 @@ class BaseObject(pygame.sprite.Sprite):
         pivot_move = pivot_rotate - pivot
         origin = (self.x + min_box[0] - pivot_move[0], self.y - max_box[1] + pivot_move[1])
         self.origin = origin
-        
+        self.rect = pygame.Rect(origin[0], origin[1], w, h)
     
     def draw_self(self):
         w, h = self.image.get_size()
-        self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 75 )/100), int(h * (self.hp + 50)/100)))
-        self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
+        #self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 75 )/100), int(h * (self.hp + 50)/100)))
+        #self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
         screen.blit(self.rotated_image, self.origin)
         self.mask = pygame.mask.from_surface(self.rotated_image)
-        self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
+        #pygame.draw.rect(screen, (0, 255, 0), self.rect, 1)
         #pygame.draw.circle(screen, (0,255,0), (int(self.x), int(self.y)), 2)
         
     
