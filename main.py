@@ -12,10 +12,10 @@ import pygame
 import math
 
 #screen = pygame.display.set_mode((800, 600))
-DEBUG = True
+DEBUG = False
 
 player = Player()
-player.image = pygame.image.load('images\\player.png')
+player.image = pygame.image.load('images/player.png')
 pygame.init()
 player.y = 300
 player.x = 300

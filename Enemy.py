@@ -4,12 +4,13 @@ import pygame
 import variables
 from variables import *
 from BaseObject import BaseObject
-enemy_image = pygame.image.load('images\\enemy'+str(random.randint(1,6))+'.png')
+enemy_images = list(pygame.image.load('images/enemy'+str(i)+'.png') for i in range(1,7))
+print(enemy_images)
 
 class Enemy(BaseObject):
     def __init__(self):
         super().__init__()
-        self.image = enemy_image
+        self.image = enemy_images[random.randint(0,5)]
         self.mask = pygame.mask.from_surface(self.image)
         self.asteroid_sound = pygame.mixer.Sound("sounds\\asteroids_impact.wav")
         self.y = 0
