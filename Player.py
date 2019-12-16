@@ -64,6 +64,8 @@ class Player (BaseObject):
         self.origin = (self.x + min_box[0], self.y - max_box[1])
         self.rect = pygame.Rect(self.origin[0], self.origin[1], self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
         #rad_angle =  self.rotation *math.pi/180
+        self.mask = pygame.mask.from_surface(self.rotated_image)
+        
         
     def reset_forwards_speed(self):
         if self.vel_forwards > self.constant_speed:
@@ -73,8 +75,9 @@ class Player (BaseObject):
     
     def draw_self(self):
         center = self.get_center()
-        self.mask = pygame.mask.from_surface(self.rotated_image)
-        self.rotated_image = self.rotated_image.convert()
+        
+        if(self.alpha < 255):
+            self.rotated_image = self.rotated_image.convert()
         
         self.alpha += self.ialpha
         if self.alpha > 255:

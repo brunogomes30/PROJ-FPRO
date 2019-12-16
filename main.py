@@ -1,4 +1,5 @@
 import time
+import variables
 from Player import Player
 from Enemy import Enemy
 from Shot import Shot
@@ -7,12 +8,11 @@ from pygame import *
 from Label import Label
 from QuadTree import QuadTree
 from variables import screen,all_entities, time_delta, FPS, HEIGHT, WIDTH, can_spawn_enemy, temporary_entities
-import variables
 import pygame
 import math
 
 #screen = pygame.display.set_mode((800, 600))
-
+DEBUG = True
 
 player = Player()
 player.image = pygame.image.load('images\\player.png')
@@ -80,13 +80,25 @@ while running:
         
     #After Input
     
+    if DEBUG:
+        time = pygame.time.get_ticks()
+        print("Move:")
     for x in all_entities:
         x.move()
     
+    if DEBUG:
+        print(str(pygame.time.get_ticks() - time) + "..\n")
+        time = pygame.time.get_ticks()
+        print("insert to quadTree")
     for x in all_entities:
         if inside_screen(x):
             quad_tree.insert(x)
-            
+    
+    if DEBUG:
+        print(str(pygame.time.get_ticks() - time) + "..\n")
+        time = pygame.time.get_ticks()
+        print("Remove:")
+    
     for x in all_entities:
         if not (-HEIGHT<x.y<HEIGHT*2 and -WIDTH<x.x<WIDTH*2):
             entities_to_remove.add(x)
@@ -94,6 +106,14 @@ while running:
     score_display = font.render("Score: "+str(player.score), 1, (255, 255, 255))
     lives_display = font.render("Lives: "+str(player.lives), 1, (255, 255, 255))
     
+    if DEBUG:
+        print(str(pygame.time.get_ticks() - time) + "..\n")
+        time = pygame.time.get_ticks()
+        print("Check collisions:")
+    
+    
+    
+    #Collisions
     for a in all_entities:
         if a in entities_to_remove:
             continue
@@ -129,6 +149,10 @@ while running:
     
     all_entities -= entities_to_remove    
     
+    if DEBUG:
+        print(str(pygame.time.get_ticks() - time)+ "..\n")
+    
+    
     temps_to_remove = set()
     
     
@@ -137,25 +161,44 @@ while running:
     all_entities -= entities_to_remove
 
     entities_to_remove = set()
-    all_entities_updated = all_entities.copy()
-    print(len(all_entities), clock.get_fps())
+    #all_entities_updated = all_entities.copy()
+    if DEBUG:
+        time = pygame.time.get_ticks()
+        print("Fill:")
+    #print(len(all_entities), clock.get_fps())
     
     screen.fill((0,0,0))
-    
+
+    if DEBUG:
+        print(str(pygame.time.get_ticks() - time) + "..\n")
+        time = pygame.time.get_ticks()
+        print("Draw entities")
+        
     for x in all_entities:
         x.draw_self()
-    quad_tree.draw_self()
+    
+    if DEBUG:
+        print(str(pygame.time.get_ticks() - time) + "..\n")
+        #quad_tree.draw_self()
+        time = pygame.time.get_ticks()
+        print("Draw temps")
     
     for x in temporary_entities:
         x.ticksLeft-=1
         if x.ticksLeft <= 0:
             temps_to_remove.add(x)
         x.draw_self()
-        
+    
+    if DEBUG:
+        print(str(pygame.time.get_ticks() - time) + "..\n")
+        print("-----------------------\n---------------------\n---------------")
     temporary_entities -= temps_to_remove
     
     screen.blit(score_display, (0, 0))
     screen.blit(lives_display, (0, 25))
+    
+    #print(str(pygame.time.get_ticks() - time) + "\n--------\n------\n")
+    
     
     pygame.display.flip()
     clock.tick(FPS)

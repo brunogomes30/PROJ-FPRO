@@ -4,11 +4,12 @@ import pygame
 import variables
 from variables import *
 from BaseObject import BaseObject
+enemy_image = pygame.image.load('images\\enemy'+str(random.randint(1,6))+'.png')
 
 class Enemy(BaseObject):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load('images\\enemy'+str(random.randint(1,6))+'.png')
+        self.image = enemy_image
         self.mask = pygame.mask.from_surface(self.image)
         self.asteroid_sound = pygame.mixer.Sound("sounds\\asteroids_impact.wav")
         self.y = 0
@@ -26,6 +27,7 @@ class Enemy(BaseObject):
         
     def spawn(self):
         maxspeed = 8000
+        """
         if random.randint(0,2):
             #SPAWN DOWN
             self.y = random.randint(HEIGHT + 100, HEIGHT + 300)
@@ -43,10 +45,43 @@ class Enemy(BaseObject):
             #SPAWN LEFT
             self.x = - random.randint(100, 300)
             self.speed[0] = random.randint(maxspeed * 0.2, maxspeed) / 100
+            
+        """
+        n = variables.curr_position_to_spawn
+        
+        if n % 2 == 0:
+            #Spawn UP or DOWN
+            self.y = variables.SPAWN_HEIGHT[0] if n == 0 else variables.SPAWN_HEIGHT[1]
+            self.x = variables.locations_to_spawn[n][variables.positions_to_spawn[n]]
+            
+            if n == 0:
+                #Spawn UP
+                self.speed[1] = random.randint(maxspeed *0.2, maxspeed) / 100
+            else:
+                #Spawn DOWN
+                self.speed[1] = -random.randint(maxspeed *0.2, maxspeed) / 100
+            
+            self.speed[0] = random.randint(-maxspeed * 0.5, maxspeed * 0.5) / 100
+        else:
+            #Spawn LEFT or RIGHT
+            self.x = variables.SPAWN_WIDTH[0] if n == 1 else variables.SPAWN_WIDTH[1]
+            self.y = variables.locations_to_spawn[n][variables.positions_to_spawn[n]]
+            
+            if n == 1:
+                #Spawn Right
+                self.speed[0] = -random.randint(maxspeed * 0.2, maxspeed) / 100
+            else:
+                #Spawn Left
+                self.speed[0] = random.randint(maxspeed * 0.2, maxspeed) / 100
+            
+            self.speed[1] = random.randint(-maxspeed * 0.5, maxspeed * 0.5) / 100
+            
+        self.refresh_spawn_position()
         all_entities.add(self)
     
     def move(self):
         self.rotation += 100 * variables.time_delta
+        
         self.y += self.speed[1] * variables.time_delta
         self.x += self.speed[0] * variables.time_delta
         w, h = self.image.get_size()
@@ -64,3 +99,10 @@ class Enemy(BaseObject):
         self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 75 )/100), int(h * (self.hp + 50)/100)))
         self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
         self.rect = pygame.Rect(self.x, self.y, self.rotated_image.get_rect().size[0], self.rotated_image.get_rect().size[1])
+        
+    def refresh_spawn_position(self):
+        pos = variables.curr_position_to_spawn
+        variables.positions_to_spawn[pos] += 1
+        if variables.positions_to_spawn[pos] >= len(variables.locations_to_spawn[pos]):
+            variables.positions_to_spawn[pos] = 0
+        variables.curr_position_to_spawn = random.randint(0,3)

@@ -3,13 +3,15 @@ import pygame
 from BaseObject import BaseObject
 from variables import *
 
+player_shot = pygame.image.load("images/shot.png")
 
 class Shot(BaseObject):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("images\\shot.png")
+        self.image = player_shot
         self.mask = pygame.mask.from_surface(self.image)
-        self.sound = pygame.mixer.Sound("sounds\\player_shot.wav")
+        shot_sound = pygame.mixer.Sound("sounds/player_shot.wav")
+        self.sound = shot_sound
         self.speed = 1000
         self.damage = 50
     
