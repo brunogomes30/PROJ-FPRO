@@ -17,11 +17,12 @@ class BaseObject(pygame.sprite.Sprite):
         self.hitbox = None
         self.mask = None
         self.hp = 100
+        self.isEnemy = False
         
     def move(self):
         w, h = self.image.get_size()
         self.rotated_image = pygame.transform.scale(self.image, (int(w * (self.hp + 75 )/100), int(h * (self.hp + 50)/100)))
-        self.rotated_image = pygame.transform.rotate(self.rotated_image,self.rotation)
+        self.rotated_image = pygame.transform.rotate(self.rotated_image, self.rotation)
         
         self.y -= (self.speed * math.cos(math.radians(self.rotation)))  * variables.time_delta
         self.x -= (self.speed * math.sin(math.radians(self.rotation)))  * variables.time_delta

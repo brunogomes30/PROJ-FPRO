@@ -11,7 +11,7 @@ class Player (BaseObject):
     def __init__(self):
         super().__init__()
         self.lives = 3
-        self.score = 0
+        self.score = 200
         self.invulnerable = False
         self.ialpha = 0
         self.alpha = 255
@@ -116,7 +116,7 @@ class Player (BaseObject):
             return
         self.last_shot = now
         shot = Shot()
-        
+        shot.sender = self
         #shot.sound.play()
         center = self.get_center()
         shot.y = center[0]

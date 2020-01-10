@@ -16,8 +16,9 @@ class Enemy(BaseObject):
         self.y = 0
         self.x = 0
         self.speed = [0, 0]
-        self.score = 20
+        self.score = 50
         self.rotation_speed = random.randint(1,5)
+        self.isEnemy = True
         
     def move(self):
         self.rotation += self.rotation_speed
@@ -78,7 +79,7 @@ class Enemy(BaseObject):
             self.speed[1] = random.randint(-maxspeed * 0.5, maxspeed * 0.5) / 100
             
         self.refresh_spawn_position()
-        all_entities.add(self)
+        variables.all_entities.add(self)
     
     def move(self):
         self.rotation += 100 * variables.time_delta

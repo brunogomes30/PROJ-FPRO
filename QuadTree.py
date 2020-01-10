@@ -1,6 +1,7 @@
 import pygame
 import utils
 from Player import Player
+from Shot import Shot
 from variables import screen
 
 class QuadTree:
@@ -31,13 +32,12 @@ class QuadTree:
         quad1 = QuadTree(self, self.min_height, self.half_height, self.half_width, self.max_width)
         quad2 = QuadTree(self, self.half_height, self.max_height, self.min_width, self.half_width)
         quad3 = QuadTree(self, self.half_height, self.max_height, self.half_width, self.max_width)
-        
         self.quads = [[quad0, quad1], [quad2, quad3]]
         
     def insert(self, obj):
         try:
             posy1, posy2, posx1, posx2 = self.get_coords(obj)
-            if posy1 == posy2 and posx1 == posx2 and self.can_divide():
+            if posy1 == posy2 and posx1 == posx2 and self.can_divide() and(posy1>=0 and posy2<=1 and posx1>=0 and posx2<=1):
                 #Insert into one small quad
                 if self.quads == None:
                     self.divide_quad()
@@ -76,7 +76,9 @@ class QuadTree:
             self.quads[1][1].draw_self()
         else:
             rect = pygame.Rect(self.min_width, self.min_height, self.max_width - self.min_width, self.max_height - self.min_height)
+            
             pygame.draw.rect(screen, (0,0,255), rect, 2)
+        
         
         
         
@@ -87,7 +89,6 @@ class QuadTree:
         for x in self.elements:
             if x != obj and utils.collide(obj, x):
                 return x
-        
         if self.quads != None:
             if posy1 >= 0 and posy2<=1 and posx1 >=0 and posx2 <=1:
                 if posy1 == posy2 and posx1 == posx2:
@@ -95,8 +96,8 @@ class QuadTree:
                     if result!= None:
                         return result
                 else:
-                    for y in range(posy1, posy2 + 1):
-                        for x in range(posx1, posx2 + 1):
+                    for y in range(0, 2):
+                        for x in range(0, 2):
                             result = self.quads[y][x].check_collisions(obj)
                             if result != None:
                                 return result
