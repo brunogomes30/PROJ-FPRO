@@ -12,7 +12,7 @@ class Enemy(BaseObject):
         super().__init__()
         self.image = enemy_images[random.randint(0,5)]
         self.mask = pygame.mask.from_surface(self.image)
-        self.asteroid_sound = pygame.mixer.Sound("sounds\\asteroids_impact.wav")
+        self.asteroid_sound = pygame.mixer.Sound("sounds/asteroids_impact.wav")
         self.y = 0
         self.x = 0
         self.speed = [0, 0]
